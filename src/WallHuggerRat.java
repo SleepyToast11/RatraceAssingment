@@ -6,8 +6,8 @@ public class WallHuggerRat implements Animal{
     int        currentRow = 0;
     String     name       = "Wall Hugger";
     int        numMoves   = 0;
-    int        relativeDirection = 0;
-    int[]      absoluteDirection = {currentRow, currentCol};
+
+    int        relativeDirection = 0;   //value of direction to be stored across
 
     // returns current row animal is in
     public int getRow(){ return currentRow; }
@@ -42,74 +42,78 @@ public class WallHuggerRat implements Animal{
         numMoves = 0;
     }
 
-        private int[] directionConverter(int direction){
-
-                int[] result = new int[2];
-                switch ((direction + relativeDirection)%4){
-                    case 0:
-                        result[0] = currentRow - 1;
-                        result[1] = currentCol;         //up
-                        return result;
-                    case 1:
-                        result[0] = currentRow;
-                        result[1] = currentCol + 1;       //right
-                        return result;
-                    case 2:
-                        result[0] = currentRow + 1;
-                        result[1] = currentCol;         //DOWN
-                        return result;
-                    case 3:
-                        result[0] = currentRow;
-                        result[1] = currentCol - 1;       //Left
-                        return result;
-                }
+    /*converts direction into int[] coordinate(row, col) and returns it
+    up = 0, right = 1, down = 2, left = 3 */
+    private int[] directionConverter(int direction){
+        int[] result = new int[2];
+        switch ((direction + relativeDirection)%4){
+            case 0:
+                result[0] = currentRow - 1;
+                result[1] = currentCol;         //up
                 return result;
+                case 1:
+                    result[0] = currentRow;
+                    result[1] = currentCol + 1;       //right
+                    return result; case 2: result[0] = currentRow + 1;
+                    result[1] = currentCol;         //DOWN
+                return result;
+                case 3:
+                    result[0] = currentRow;
+                    result[1] = currentCol - 1;       //Left
+                    return result;
         }
-
-        private int directionToMove(Maze maz){
-        int[] moveDirection = new int[2];
-           for (int i = 0; i <= 4; i++) {
-               switch (i){
-                   case 0:
-                        moveDirection = directionConverter(1);
-                        if (maz.canMove(moveDirection)){
-
-                            currentRow = moveDirection[0];
-                            currentCol = moveDirection[1];
-                            return 1;
-                        }
-                        break;
-                   case 1: moveDirection = directionConverter(0);
-
-                       if (maz.canMove(moveDirection)){
-                           System.out.println("going relative up");
-                           currentRow = moveDirection[0];
-                           currentCol = moveDirection[1];
-                           return 0;
-                       }
-                       break;
-                   case 3:
-                       moveDirection = directionConverter(2);
-                       if (maz.canMove(moveDirection)){
-                           System.out.println("going relative down");
-                           currentRow = moveDirection[0];
-                           currentCol = moveDirection[1];
-                           return 2;
-                       }
-                       break;
-                   case 2:
-                       moveDirection = directionConverter(3);
-                       if (maz.canMove(moveDirection)){
-                           System.out.println("going relative left");
-                           currentRow = moveDirection[0];
-                           currentCol = moveDirection[1];
-                           return 3;
-                       }
-                       break;
-               }
-           }
-            return -1;
+        return result;
     }
+
+    /*called to apply logic of wallHugger algorithm, checks if rat can move in up, right, left, down order, stores direction
+    * and move direction as an int[]
+    * */
+    private int directionToMove(Maze maz){
+
+        int[] moveDirection = new int[2];
+
+        for (int i = 0; i <= 4; i++) {
+
+            switch (i){
+                case 0:
+                    moveDirection = directionConverter(1);
+                    if (maz.canMove(moveDirection)){
+                        currentRow = moveDirection[0];
+                        currentCol = moveDirection[1];
+                        return 1;
+                    }
+
+                    break; case 1: moveDirection = directionConverter(0);
+                    if (maz.canMove(moveDirection)){
+                        System.out.println("going relative up");
+                        currentRow = moveDirection[0];
+                        currentCol = moveDirection[1];
+                        return 0;
+                    }
+
+                    break; case 3: moveDirection = directionConverter(2);
+                    if (maz.canMove(moveDirection)){
+                        System.out.println("going relative down");
+                        currentRow = moveDirection[0];
+                        currentCol = moveDirection[1];
+                        return 2;
+                    }
+
+                    break; case 2: moveDirection = directionConverter(3);
+                    if (maz.canMove(moveDirection)){
+                        System.out.println("going relative left");
+                        currentRow = moveDirection[0];
+                        currentCol = moveDirection[1];
+                        return 3;
+                    }
+
+                    break;
+            }
+        }
+        return -1;
+    }
+
+    //move animals coordinate with provided direction. up = 0, right = 1, down = 2, left = 3
     private void moveAnimal(int direction){
         switch (direction){
             case 0:
@@ -127,6 +131,7 @@ public class WallHuggerRat implements Animal{
         }
     }
 
+    //called by gui to move animal
     public void move(Maze maz) {
         int relative = directionToMove(maz);
         relativeDirection = (relativeDirection + relative)%4;
